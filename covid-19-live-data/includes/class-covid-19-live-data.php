@@ -27,7 +27,8 @@
  * @subpackage Covid_19_Live_Data/includes
  * @author     Jan Vrkota <jan.vrkota@dameweb.eu>
  */
-class Covid_19_Live_Data {
+class Covid_19_Live_Data
+{
 
 	/**
 	 * The loader that's responsible for maintaining and registering all hooks that power
@@ -66,8 +67,9 @@ class Covid_19_Live_Data {
 	 *
 	 * @since    1.0.0
 	 */
-	public function __construct() {
-		if ( defined( 'COVID_19_LIVE_DATA_VERSION' ) ) {
+	public function __construct()
+	{
+		if (defined('COVID_19_LIVE_DATA_VERSION')) {
 			$this->version = COVID_19_LIVE_DATA_VERSION;
 		} else {
 			$this->version = '1.0.0';
@@ -78,7 +80,6 @@ class Covid_19_Live_Data {
 		$this->set_locale();
 		$this->define_admin_hooks();
 		$this->define_public_hooks();
-
 	}
 
 	/**
@@ -97,33 +98,33 @@ class Covid_19_Live_Data {
 	 * @since    1.0.0
 	 * @access   private
 	 */
-	private function load_dependencies() {
+	private function load_dependencies()
+	{
 
 		/**
 		 * The class responsible for orchestrating the actions and filters of the
 		 * core plugin.
 		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-covid-19-live-data-loader.php';
+		require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-covid-19-live-data-loader.php';
 
 		/**
 		 * The class responsible for defining internationalization functionality
 		 * of the plugin.
 		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-covid-19-live-data-i18n.php';
+		require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-covid-19-live-data-i18n.php';
 
 		/**
 		 * The class responsible for defining all actions that occur in the admin area.
 		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-covid-19-live-data-admin.php';
+		require_once plugin_dir_path(dirname(__FILE__)) . 'admin/class-covid-19-live-data-admin.php';
 
 		/**
 		 * The class responsible for defining all actions that occur in the public-facing
 		 * side of the site.
 		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-covid-19-live-data-public.php';
+		require_once plugin_dir_path(dirname(__FILE__)) . 'public/class-covid-19-live-data-public.php';
 
 		$this->loader = new Covid_19_Live_Data_Loader();
-
 	}
 
 	/**
@@ -135,12 +136,12 @@ class Covid_19_Live_Data {
 	 * @since    1.0.0
 	 * @access   private
 	 */
-	private function set_locale() {
+	private function set_locale()
+	{
 
 		$plugin_i18n = new Covid_19_Live_Data_i18n();
 
-		$this->loader->add_action( 'plugins_loaded', $plugin_i18n, 'load_plugin_textdomain' );
-
+		$this->loader->add_action('plugins_loaded', $plugin_i18n, 'load_plugin_textdomain');
 	}
 
 	/**
@@ -150,13 +151,13 @@ class Covid_19_Live_Data {
 	 * @since    1.0.0
 	 * @access   private
 	 */
-	private function define_admin_hooks() {
+	private function define_admin_hooks()
+	{
 
-		$plugin_admin = new Covid_19_Live_Data_Admin( $this->get_plugin_name(), $this->get_version() );
+		$plugin_admin = new Covid_19_Live_Data_Admin($this->get_plugin_name(), $this->get_version());
 
-		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
-		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
-
+		$this->loader->add_action('admin_enqueue_scripts', $plugin_admin, 'enqueue_styles');
+		$this->loader->add_action('admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts');
 	}
 
 	/**
@@ -166,12 +167,34 @@ class Covid_19_Live_Data {
 	 * @since    1.0.0
 	 * @access   private
 	 */
-	private function define_public_hooks() {
+	private function define_public_hooks()
+	{
 
-		$plugin_public = new Covid_19_Live_Data_Public( $this->get_plugin_name(), $this->get_version() );
+		$plugin_public = new Covid_19_Live_Data_Public($this->get_plugin_name(), $this->get_version());
 
-		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
-		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
+		$this->loader->add_action('wp_enqueue_scripts', $plugin_public, 'enqueue_styles');
+		$this->loader->add_action('wp_enqueue_scripts', $plugin_public, 'enqueue_scripts');
+		/**
+		 * Return number of covid-19 cases in selected country
+		 */
+		$this->loader->add_shortcode('corona_country_total_cases', $plugin_public, 'corona_country_total_cases');
+		/**
+		 * Return number of recovered people in selected country
+		 */
+		$this->loader->add_shortcode('corona_country_total_recovered', $plugin_public, 'corona_country_total_recovered');
+		/**
+		 * Return string date of last update
+		 */
+		$this->loader->add_shortcode('corona_country_last_date_update', $plugin_public, 'corona_country_last_date_update');
+		/**
+		 * 
+		 * Return string time of last update
+		 */
+		$this->loader->add_shortcode('corona_country_last_time_update', $plugin_public, 'corona_country_last_time_update');
+		/**
+		 * Return string total cases on the world
+		 */
+		$this->loader->add_shortcode('corona_total_cases_on_world', $plugin_public, 'corona_total_cases_on_world');
 
 	}
 
@@ -180,7 +203,8 @@ class Covid_19_Live_Data {
 	 *
 	 * @since    1.0.0
 	 */
-	public function run() {
+	public function run()
+	{
 		$this->loader->run();
 	}
 
@@ -191,7 +215,8 @@ class Covid_19_Live_Data {
 	 * @since     1.0.0
 	 * @return    string    The name of the plugin.
 	 */
-	public function get_plugin_name() {
+	public function get_plugin_name()
+	{
 		return $this->plugin_name;
 	}
 
@@ -201,7 +226,8 @@ class Covid_19_Live_Data {
 	 * @since     1.0.0
 	 * @return    Covid_19_Live_Data_Loader    Orchestrates the hooks of the plugin.
 	 */
-	public function get_loader() {
+	public function get_loader()
+	{
 		return $this->loader;
 	}
 
@@ -211,8 +237,8 @@ class Covid_19_Live_Data {
 	 * @since     1.0.0
 	 * @return    string    The version number of the plugin.
 	 */
-	public function get_version() {
+	public function get_version()
+	{
 		return $this->version;
 	}
-
 }
