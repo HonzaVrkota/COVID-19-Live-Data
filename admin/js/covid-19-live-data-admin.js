@@ -1,4 +1,4 @@
-(function( $ ) {
+(function ($) {
 	'use strict';
 
 	/**
@@ -28,5 +28,16 @@
 	 * Although scripts in the WordPress core, Plugins and Themes may be
 	 * practising this, we should strive to set a better example in our own work.
 	 */
+	$(window).load(function () {
+		$('#selectCountry').on('change', function () {
+			$('#countryInput').val(this.value);
+		});
+		$('#countryInput').on('click', function () {
+			this.select();
+			document.execCommand("copy");
+			alert("Country name copied to clipboard");
+		});
+	});
 
-})( jQuery );
+
+})(jQuery);
