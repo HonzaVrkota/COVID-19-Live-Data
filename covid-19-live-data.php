@@ -8,7 +8,7 @@
  * registers the activation and deactivation functions, and defines a function
  * that starts the plugin.
  *
- * @link              https://dameweb.eu
+ * @link              https://github.com/HonzaVrkota/COVID-19-Live-Data
  * @since             1.0.0
  * @package           Covid_19_Live_Data
  *
