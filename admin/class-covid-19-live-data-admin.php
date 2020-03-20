@@ -171,7 +171,7 @@ class Covid_19_Live_Data_Admin
 			echo '<p><code>[corona_data_by_country <i>country="<b class="param">_Name_of_the_country_</b>" data="<b class="param">_Type_of_data_" onlyNums</b>]</i></code></p>';
 			_e('<p>Parameter <b>[compulsory]</b>:<code>country</code> - insert into this parameter name of the country, which you copied from the input above</p>');
 			_e('<p>Parameter <b>[compulsory]</b>:<code>data</code> - insert into this parameter type of data, which you see below</p>');
-			_e('<p>Parameter <b>[optional]</b>: <code>onlyNums</code> - insert into page only digit, without any character (space, comma, etc.)</p>')
+			_e('<p>Parameter <b>[optional]</b>: <code>onlyNums</code> - insert into page only digit, without any character (space, comma, etc.)</p>');
 			_e('<p>Parameter: Type of data for the first short code</p>');
 			echo '<ul class="terminal-font">';
 			foreach ($arrayOfDataTypesCountry as $i => $dataType) {
@@ -187,7 +187,7 @@ class Covid_19_Live_Data_Admin
 			_e('<p>Shortcode: </p>');
 			echo '<p><code>[corona_total_cases_on_world  <i>data="<b class="param">_Type of global data_" onlyNums</b>]</i></code></p>';
 			_e('<p>Parameter:<code>data</code> - insert into this parameter type of data, which you see below</p>');
-			_e('<p>Parameter <b>[optional]</b>: <code>onlyNums</code> - insert into page only digit, without any character (space, comma, etc.)</p>')
+			_e('<p>Parameter <b>[optional]</b>: <code>onlyNums</code> - insert into page only digit, without any character (space, comma, etc.)</p>');
 			_e('<p>Parameter: Type of data for the second short code</p>');
 			echo '<ul class="terminal-font">';
 			foreach ($arrayOfDataTypesWorld as $i => $dataType) {
