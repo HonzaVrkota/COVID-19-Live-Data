@@ -111,7 +111,7 @@ class Covid_19_Live_Data_Public
 		$lengtNumber = strlen($number);
 		$newDelimetr = " ";
 		if ($lengtNumber > 3) {
-			if ($onlyNums) {
+			if ($onlyNums == true) {
 				return str_replace(",", "", $number);
 			} else {
 				return str_replace(",", $newDelimetr, $number);
@@ -263,7 +263,7 @@ class Covid_19_Live_Data_Public
 		if (isset($a['country']) && isset($a['data'])) {
 			$country = $a['country'];
 			$data = $a['data'];
-			if (isset($a['onlyNums']) && $a['onlyNums'] == "true") {
+			if (isset($a['onlyNums'])) {
 				$onlyNums = true;
 			} else {
 				$onlyNums = false;
@@ -294,7 +294,7 @@ class Covid_19_Live_Data_Public
 		), $atts);
 		if (isset($a['data'])) {
 			$data = $a['data'];
-			if (isset($a['onlyNums']) && $a['onlyNums'] == "true") {
+			if (isset($a['onlyNums'])) {
 				$onlyNums = true;
 			} else {
 				$onlyNums = false;
