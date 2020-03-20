@@ -158,6 +158,8 @@ class Covid_19_Live_Data
 
 		$this->loader->add_action('admin_enqueue_scripts', $plugin_admin, 'enqueue_styles');
 		$this->loader->add_action('admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts');
+
+		$this->loader->add_action('admin_menu', $plugin_admin, 'covid_data_menu');
 	}
 
 	/**
@@ -174,6 +176,10 @@ class Covid_19_Live_Data
 
 		$this->loader->add_action('wp_enqueue_scripts', $plugin_public, 'enqueue_styles');
 		$this->loader->add_action('wp_enqueue_scripts', $plugin_public, 'enqueue_scripts');
+		/**
+		 * Return number of covid-19 cases in selected country
+		 */
+		$this->loader->add_shortcode('corona_data_by_country', $plugin_public, 'corona_data_by_country');
 		/**
 		 * Return number of covid-19 cases in selected country
 		 */
@@ -195,7 +201,6 @@ class Covid_19_Live_Data
 		 * Return string total cases on the world
 		 */
 		$this->loader->add_shortcode('corona_total_cases_on_world', $plugin_public, 'corona_total_cases_on_world');
-
 	}
 
 	/**

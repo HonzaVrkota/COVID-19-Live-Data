@@ -2,3 +2,14 @@
  * All of the CSS for your admin-specific functionality should be
  * included in this file.
  */
+@import url("https://fonts.googleapis.com/css?family=PT+Mono&display=swap");
+.param {
+  color: #16302b;
+  font-family: "PT Mono", monospace;
+}
+code {
+  font-family: "PT Mono", monospace;
+}
+.terminal-font {
+  font-family: "PT Mono", monospace;
+}

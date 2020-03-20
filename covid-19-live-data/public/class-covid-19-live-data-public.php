@@ -106,7 +106,26 @@ class Covid_19_Live_Data_Public
 		wp_enqueue_script($this->plugin_name, plugin_dir_url(__FILE__) . 'js/covid-19-live-data-public.js', array('jquery'), $this->version, false);
 	}
 
+	private function formate_numbers($number)
+	{
+		$lengtNumber = strlen($number);
+		$newDelimetr = " ";
+		if ($lengtNumber > 3) {
+			return str_replace(",", $newDelimetr, $number);
+		} else {
+			return $number;
+		}
+	}
 
+	private function formate_country_name($country) {
+		return str_replace(" ", "%20", $country);
+	}
+	/**	
+	 * Get curl response from API server
+	 * 
+	 * @param string URL of server with parameters
+	 * @return array Return assoc array with data
+	 */
 	private function get_curl_response($curlopt_url)
 	{
 		$curl = curl_init();
@@ -148,13 +167,12 @@ class Covid_19_Live_Data_Public
 	 * [3] -> Last time of update
 	 * @access Private
 	 */
-	private function corona_by_country_api($country)
+	private function corona_by_country_api($country, $data)
 	{
 		if ($country != "all") {
+			$country = $this->formate_country_name($country);
 			$response = $this->get_curl_response("https://coronavirus-monitor.p.rapidapi.com/coronavirus/latest_stat_by_country.php?country=$country");
 
-			$_actuallyTotalCzechia = $response['latest_stat_by_country'][0]['total_cases'];
-			$_totalRecovered = $response['latest_stat_by_country'][0]['total_recovered'];
 			$rawLastUpdate = $response['latest_stat_by_country'][0]['record_date'];
 			$rawLastUpdate = explode(" ", $rawLastUpdate);
 			$rawLastDateOfUpdate = $rawLastUpdate[0];
@@ -162,106 +180,90 @@ class Covid_19_Live_Data_Public
 			$rawLastDateOfUpdate = explode("-", $rawLastDateOfUpdate);
 			$rawLastTimeOfUpdate = explode(".", $rawLastTimeOfUpdate);
 			$rawLastTimeOfUpdate = explode(":", $rawLastTimeOfUpdate[0]);
+			// Ready var to display
 			$_lastTimeOfUpdate = intval($rawLastTimeOfUpdate[0]) + 1 . ":" . $rawLastTimeOfUpdate[1] . ":" . $rawLastTimeOfUpdate[0];
 			$_lastDateOfUpdate = $rawLastDateOfUpdate[2] . "." . $rawLastDateOfUpdate[1] . "." . $rawLastDateOfUpdate[0];
 
-			$returnDataCountry = array($_actuallyTotalCzechia, $_totalRecovered, $_lastDateOfUpdate, $_lastTimeOfUpdate);
-			return $returnDataCountry;
+			if ($data == "time") {
+				return $_lastTimeOfUpdate;
+			} elseif ($data == "date") {
+				return $_lastDateOfUpdate;
+			} else {
+				$returnData = $this->formate_numbers($response['latest_stat_by_country'][0][$data]);
+				
+				if (isset($returnData)) {
+					if ($returnData == "") {
+						$returnData = "0";
+					}
+					return $returnData;
+				} else {
+					return "Selected data to show does not exist. Please select correct data to show";
+				}
+			}
+			/*
+			 * Example of variable with data
+			 * 
+			* $_actuallyTotalCzechia = $this->formate_numbers($response['latest_stat_by_country'][0]['total_cases']);
+			* $_totalRecovered = $this->formate_numbers($response['latest_stat_by_country'][0]['total_recovered']);
+			*/
 		} else {
 			$responseWorld = $this->get_curl_response("https://coronavirus-monitor.p.rapidapi.com/coronavirus/worldstat.php");
+			$rawLastUpdate = $responseWorld['statistic_taken_at'];
+			$rawLastUpdate = explode(" ", $rawLastUpdate);
+			$rawLastDateOfUpdate = $rawLastUpdate[0];
+			$rawLastTimeOfUpdate = $rawLastUpdate[1];
+			$rawLastDateOfUpdate = explode("-", $rawLastDateOfUpdate);
+			$rawLastTimeOfUpdate = explode(".", $rawLastTimeOfUpdate);
+			$rawLastTimeOfUpdate = explode(":", $rawLastTimeOfUpdate[0]);
+			// Ready var to display
+			$_lastTimeOfUpdate = intval($rawLastTimeOfUpdate[0]) + 1 . ":" . $rawLastTimeOfUpdate[1] . ":" . $rawLastTimeOfUpdate[0];
+			$_lastDateOfUpdate = $rawLastDateOfUpdate[2] . "." . $rawLastDateOfUpdate[1] . "." . $rawLastDateOfUpdate[0];
 
-			$_totalWorldCases = str_replace(",", " ", $responseWorld['total_cases']);
-			return  $_totalWorldCases;
+			if ($data == "time") {
+				return $_lastTimeOfUpdate;
+			} elseif ($data == "date") {
+				return $_lastDateOfUpdate;
+			} else {
+				$returnData = $this->formate_numbers($responseWorld[$data]);
+				if (isset($returnData)) {
+					if ($returnData == "") {
+						$returnData = "0";
+					}
+					return $returnData;
+				} else {
+					return "Selected data to show does not exist. Please select correct data to show";
+				}
+			}
+			/**
+			*	Example variable with data
+			* $_totalWorldCases = str_replace(",", " ", $responseWorld['total_cases']);
+			* $_totalWorldDeaths = str_replace(",", " ", $responseWorld['total_deaths']);
+			*/
+
 		}
 	}
-
 	/**
-	 * Get live data from API about total cases of COVID 19 by the selected country
+	 * Get live data from API about total cases of COVID 19 by the selected country and data
 	 * 
 	 * @since 1.0.0.
-	 * @return string Number of total cases in selected country
+	 * @return string Number of selected data from country
 	 */
-	public function corona_country_total_cases($atts = [])
+	public function corona_data_by_country($atts = [])
 	{
 		$a = shortcode_atts(array(
-			'country' => ''
+			'country' => '',
+			'data' => ''
 		), $atts);
-		if (isset($a['country'])) {
+
+		if (isset($a['country']) && isset($a['data'])) {
 			$country = $a['country'];
+			$data = $a['data'];
 
 			$countryData = $this->corona_by_country_api(
-				$country
+				$country,
+				$data
 			);
-			return $countryData[0];
-		} else {
-			return $this->error_empty_attr;
-		}
-	}
-
-	/**
-	 * Get live data from API about total recovered of COVID 19 by the selected country
-	 * 
-	 * @since 1.0.0.
-	 * @return string Number of total recovered in selected country
-	 */
-	public function corona_country_total_recovered($atts = [])
-	{
-		$a = shortcode_atts(array(
-			'country' => ''
-		), $atts);
-		if (isset($a['country'])) {
-			$country = $a['country'];
-
-			$countryData = $this->corona_by_country_api(
-				$country
-			);
-			return $countryData[1];
-		} else {
-			return $this->error_empty_attr;
-		}
-	}
-
-	/**
-	 * Get live data from API about last date update of the selected country
-	 * 
-	 * @since 1.0.0.
-	 * @return string Last date of update
-	 */
-	public function corona_country_last_date_update($atts = [])
-	{
-		$a = shortcode_atts(array(
-			'country' => ''
-		), $atts);
-		if (isset($a['country'])) {
-			$country = $a['country'];
-
-			$countryData = $this->corona_by_country_api(
-				$country
-			);
-			return $countryData[2];
-		} else {
-			return $this->error_empty_attr;
-		}
-	}
-
-	/**
-	 * Get live data from API about last time update of the selected country
-	 * 
-	 * @since 1.0.0.
-	 * @return string Last time of update
-	 */
-	public function corona_country_last_time_update($atts = [])
-	{
-		$a = shortcode_atts(array(
-			'country' => ''
-		), $atts);
-		if (isset($a['country'])) {
-			$country = $a['country'];
-
-			$countryData = $this->corona_by_country_api(
-				$country
-			);
-			return $countryData[3];
+			return $countryData;
 		} else {
 			return $this->error_empty_attr;
 		}
@@ -273,9 +275,17 @@ class Covid_19_Live_Data_Public
 	 * @since 1.0.0.
 	 * @return string Total cases on world
 	 */
-	public function corona_total_cases_on_world()
+	public function corona_total_cases_on_world($atts = [])
 	{
-		$countryData = $this->corona_by_country_api("all");
-		return $countryData;
+		$a = shortcode_atts(array(
+			'data' => ''
+		), $atts);
+		if (isset($a['data'])) {
+			$data = $a['data'];
+			$countryData = $this->corona_by_country_api("all", $data);
+			return $countryData;
+		} else {
+			return $this->error_empty_attr;
+		}
 	}
 }
