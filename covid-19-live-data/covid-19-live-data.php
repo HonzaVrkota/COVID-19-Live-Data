@@ -16,7 +16,7 @@
  * Plugin Name:       COVID-19 Live Data
  * Plugin URI:        https://dameweb.eu
  * Description:       This is a short description of what the plugin does. It's displayed in the WordPress admin area.
- * Version:           1.0.0
+ * Version:           1.0.1
  * Author:            Jan Vrkota
  * Author URI:        https://dameweb.eu
  * License:           GPL-2.0+
