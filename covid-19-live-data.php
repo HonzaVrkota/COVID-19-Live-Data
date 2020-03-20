@@ -15,13 +15,8 @@
  * @wordpress-plugin
  * Plugin Name:       COVID-19 Live Data
  * Plugin URI:        https://dameweb.eu
-<<<<<<< HEAD:covid-19-live-data/covid-19-live-data.php
- * Description:       This is a short description of what the plugin does. It's displayed in the WordPress admin area.
- * Version:           1.0.1
-=======
  * Description:       Live data about COVID-19. 2 Short codes that display data on your page.
- * Version:           1.0.0
->>>>>>> 3f3b6ef2ebd161ed2a98da059b79dba72abc981e:covid-19-live-data.php
+ * Version:           1.0.1
  * Author:            Jan Vrkota
  * Author URI:        https://dameweb.eu
  * License:           GPL-2.0+
