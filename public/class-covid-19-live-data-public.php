@@ -106,18 +106,23 @@ class Covid_19_Live_Data_Public
 		wp_enqueue_script($this->plugin_name, plugin_dir_url(__FILE__) . 'js/covid-19-live-data-public.js', array('jquery'), $this->version, false);
 	}
 
-	private function formate_numbers($number)
+	private function formate_numbers($number, $onlyNums)
 	{
 		$lengtNumber = strlen($number);
 		$newDelimetr = " ";
 		if ($lengtNumber > 3) {
-			return str_replace(",", $newDelimetr, $number);
+			if ($onlyNums) {
+				return str_replace(",", "", $number);
+			} else {
+				return str_replace(",", $newDelimetr, $number);
+			}
 		} else {
 			return $number;
 		}
 	}
 
-	private function formate_country_name($country) {
+	private function formate_country_name($country)
+	{
 		return str_replace(" ", "%20", $country);
 	}
 	/**	
@@ -167,7 +172,7 @@ class Covid_19_Live_Data_Public
 	 * [3] -> Last time of update
 	 * @access Private
 	 */
-	private function corona_by_country_api($country, $data)
+	private function corona_by_country_api($country, $data, $onlyNums)
 	{
 		if ($country != "all") {
 			$country = $this->formate_country_name($country);
@@ -189,8 +194,8 @@ class Covid_19_Live_Data_Public
 			} elseif ($data == "date") {
 				return $_lastDateOfUpdate;
 			} else {
-				$returnData = $this->formate_numbers($response['latest_stat_by_country'][0][$data]);
-				
+				$returnData = $this->formate_numbers($response['latest_stat_by_country'][0][$data], $onlyNums);
+
 				if (isset($returnData)) {
 					if ($returnData == "") {
 						$returnData = "0";
@@ -224,7 +229,7 @@ class Covid_19_Live_Data_Public
 			} elseif ($data == "date") {
 				return $_lastDateOfUpdate;
 			} else {
-				$returnData = $this->formate_numbers($responseWorld[$data]);
+				$returnData = $this->formate_numbers($responseWorld[$data], $onlyNums);
 				if (isset($returnData)) {
 					if ($returnData == "") {
 						$returnData = "0";
@@ -235,11 +240,10 @@ class Covid_19_Live_Data_Public
 				}
 			}
 			/**
-			*	Example variable with data
-			* $_totalWorldCases = str_replace(",", " ", $responseWorld['total_cases']);
-			* $_totalWorldDeaths = str_replace(",", " ", $responseWorld['total_deaths']);
-			*/
-
+			 *	Example variable with data
+			 * $_totalWorldCases = str_replace(",", " ", $responseWorld['total_cases']);
+			 * $_totalWorldDeaths = str_replace(",", " ", $responseWorld['total_deaths']);
+			 */
 		}
 	}
 	/**
@@ -252,16 +256,23 @@ class Covid_19_Live_Data_Public
 	{
 		$a = shortcode_atts(array(
 			'country' => '',
-			'data' => ''
+			'data' => '',
+			'onlyNums' => ''
 		), $atts);
 
 		if (isset($a['country']) && isset($a['data'])) {
 			$country = $a['country'];
 			$data = $a['data'];
+			if (isset($a['onlyNums']) && $a['onlyNums'] == "true") {
+				$onlyNums = true;
+			} else {
+				$onlyNums = false;
+			}
 
 			$countryData = $this->corona_by_country_api(
 				$country,
-				$data
+				$data,
+				$onlyNums
 			);
 			return $countryData;
 		} else {
@@ -278,11 +289,17 @@ class Covid_19_Live_Data_Public
 	public function corona_total_cases_on_world($atts = [])
 	{
 		$a = shortcode_atts(array(
-			'data' => ''
+			'data' => '',
+			'onlyNums' => ''
 		), $atts);
 		if (isset($a['data'])) {
 			$data = $a['data'];
-			$countryData = $this->corona_by_country_api("all", $data);
+			if (isset($a['onlyNums']) && $a['onlyNums'] == "true") {
+				$onlyNums = true;
+			} else {
+				$onlyNums = false;
+			}
+			$countryData = $this->corona_by_country_api("all", $data, $onlyNums);
 			return $countryData;
 		} else {
 			return $this->error_empty_attr;
