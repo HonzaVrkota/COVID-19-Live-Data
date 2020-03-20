@@ -42,6 +42,9 @@ class Covid_19_Live_Data_Loader
 	 */
 	protected $filters;
 
+
+	protected $shortcodes;
+
 	/**
 	 * Initialize the collections used to maintain the actions and filters.
 	 *
@@ -52,6 +55,8 @@ class Covid_19_Live_Data_Loader
 
 		$this->actions = array();
 		$this->filters = array();
+		$this->shortcodes = array();
+
 	}
 
 	/**

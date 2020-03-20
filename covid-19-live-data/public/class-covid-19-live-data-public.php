@@ -57,7 +57,7 @@ class Covid_19_Live_Data_Public
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
 		$this->api_key = "9a1efe9fb1mshe235e0b83a5c44cp1e4406jsn8e2df1360b6c";
-		$this->error_empty_attr = _e("Please fill the name of the country");
+		$this->error_empty_attr = "Please fill the name of the country";
 	}
 
 	/**
@@ -105,24 +105,10 @@ class Covid_19_Live_Data_Public
 
 		wp_enqueue_script($this->plugin_name, plugin_dir_url(__FILE__) . 'js/covid-19-live-data-public.js', array('jquery'), $this->version, false);
 	}
-	/**
-	 * Connect to API server and get response 
-	 * 
-	 * @param string Name of the country
-	 * @return array Array of values 
-	 * [0] -> Acctualy total cases in coutrny
-	 * [1] -> Total recovered
-	 * [2] -> Last date of update
-	 * [3] -> Last time of update
-	 */
-	private function corona_by_country_api($country = "all")
+
+
+	private function get_curl_response($curlopt_url)
 	{
-		$curlopt_url = "";
-		if ($country = "all") {
-			$curlopt_url = "https://coronavirus-monitor.p.rapidapi.com/coronavirus/worldstat.php";
-		} else {
-			$curlopt_url = "https://coronavirus-monitor.p.rapidapi.com/coronavirus/latest_stat_by_country.php?country=$country";
-		}
 		$curl = curl_init();
 
 		curl_setopt_array($curl, array(
@@ -146,28 +132,46 @@ class Covid_19_Live_Data_Public
 		curl_close($curl);
 
 		if ($err) {
-			return _e("cURL Error #:" . $err);
+			return "cURL Error #:" . $err;
 		} else {
-			$response = json_decode($response, true);
-			if ($country = "all") {
-				$_totalWorldCases = str_replace(",", " ", $response['total_cases']);
-				return  $_totalWorldCases;
-			} else {
-				$_actuallyTotalCzechia = $response['latest_stat_by_country'][0]['total_cases'];
-				$_totalRecovered = $response['latest_stat_by_country'][0]['total_recovered'];
-				$rawLastUpdate = $response['latest_stat_by_country'][0]['record_date'];
-				$rawLastUpdate = explode(" ", $rawLastUpdate);
-				$rawLastDateOfUpdate = $rawLastUpdate[0];
-				$rawLastTimeOfUpdate = $rawLastUpdate[1];
-				$rawLastDateOfUpdate = explode("-", $rawLastDateOfUpdate);
-				$rawLastTimeOfUpdate = explode(".", $rawLastTimeOfUpdate);
-				$rawLastTimeOfUpdate = explode(":", $rawLastTimeOfUpdate[0]);
-				$_lastTimeOfUpdate = intval($rawLastTimeOfUpdate[0]) + 1 . ":" . $rawLastTimeOfUpdate[1] . ":" . $rawLastTimeOfUpdate[0];
-				$_lastDateOfUpdate = $rawLastDateOfUpdate[2] . "." . $rawLastDateOfUpdate[1] . "." . $rawLastDateOfUpdate[0];
+			return json_decode($response, true);
+		}
+	}
+	/**
+	 * Connect to API server and get response 
+	 * 
+	 * @param string Name of the country
+	 * @return array Array of values 
+	 * [0] -> Acctualy total cases in coutrny
+	 * [1] -> Total recovered
+	 * [2] -> Last date of update
+	 * [3] -> Last time of update
+	 * @access Private
+	 */
+	private function corona_by_country_api($country)
+	{
+		if ($country != "all") {
+			$response = $this->get_curl_response("https://coronavirus-monitor.p.rapidapi.com/coronavirus/latest_stat_by_country.php?country=$country");
 
-				$returnDataCountry = array($_actuallyTotalCzechia, $_totalRecovered, $_lastDateOfUpdate, $_lastTimeOfUpdate);
-				return $returnDataCountry;
-			}
+			$_actuallyTotalCzechia = $response['latest_stat_by_country'][0]['total_cases'];
+			$_totalRecovered = $response['latest_stat_by_country'][0]['total_recovered'];
+			$rawLastUpdate = $response['latest_stat_by_country'][0]['record_date'];
+			$rawLastUpdate = explode(" ", $rawLastUpdate);
+			$rawLastDateOfUpdate = $rawLastUpdate[0];
+			$rawLastTimeOfUpdate = $rawLastUpdate[1];
+			$rawLastDateOfUpdate = explode("-", $rawLastDateOfUpdate);
+			$rawLastTimeOfUpdate = explode(".", $rawLastTimeOfUpdate);
+			$rawLastTimeOfUpdate = explode(":", $rawLastTimeOfUpdate[0]);
+			$_lastTimeOfUpdate = intval($rawLastTimeOfUpdate[0]) + 1 . ":" . $rawLastTimeOfUpdate[1] . ":" . $rawLastTimeOfUpdate[0];
+			$_lastDateOfUpdate = $rawLastDateOfUpdate[2] . "." . $rawLastDateOfUpdate[1] . "." . $rawLastDateOfUpdate[0];
+
+			$returnDataCountry = array($_actuallyTotalCzechia, $_totalRecovered, $_lastDateOfUpdate, $_lastTimeOfUpdate);
+			return $returnDataCountry;
+		} else {
+			$responseWorld = $this->get_curl_response("https://coronavirus-monitor.p.rapidapi.com/coronavirus/worldstat.php");
+
+			$_totalWorldCases = str_replace(",", " ", $responseWorld['total_cases']);
+			return  $_totalWorldCases;
 		}
 	}
 
@@ -182,10 +186,11 @@ class Covid_19_Live_Data_Public
 		$a = shortcode_atts(array(
 			'country' => ''
 		), $atts);
-		if (!empty($a['country']) || !empty($a)) {
+		if (isset($a['country'])) {
+			$country = $a['country'];
 
 			$countryData = $this->corona_by_country_api(
-				$a['country']
+				$country
 			);
 			return $countryData[0];
 		} else {
@@ -204,10 +209,11 @@ class Covid_19_Live_Data_Public
 		$a = shortcode_atts(array(
 			'country' => ''
 		), $atts);
-		if (!empty($a['country']) || !empty($a)) {
+		if (isset($a['country'])) {
+			$country = $a['country'];
 
 			$countryData = $this->corona_by_country_api(
-				$a['country']
+				$country
 			);
 			return $countryData[1];
 		} else {
@@ -226,10 +232,11 @@ class Covid_19_Live_Data_Public
 		$a = shortcode_atts(array(
 			'country' => ''
 		), $atts);
-		if (!empty($a['country']) || !empty($a)) {
+		if (isset($a['country'])) {
+			$country = $a['country'];
 
 			$countryData = $this->corona_by_country_api(
-				$a['country']
+				$country
 			);
 			return $countryData[2];
 		} else {
@@ -248,10 +255,11 @@ class Covid_19_Live_Data_Public
 		$a = shortcode_atts(array(
 			'country' => ''
 		), $atts);
-		if (!empty($a['country']) || !empty($a)) {
+		if (isset($a['country'])) {
+			$country = $a['country'];
 
 			$countryData = $this->corona_by_country_api(
-				$a['country']
+				$country
 			);
 			return $countryData[3];
 		} else {
@@ -267,7 +275,7 @@ class Covid_19_Live_Data_Public
 	 */
 	public function corona_total_cases_on_world()
 	{
-		$countryData = $this->corona_by_country_api();
-		return $countryData[3];
+		$countryData = $this->corona_by_country_api("all");
+		return $countryData;
 	}
 }
