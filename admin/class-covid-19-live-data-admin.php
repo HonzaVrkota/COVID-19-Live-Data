@@ -151,7 +151,7 @@ class Covid_19_Live_Data_Admin
 			$arrayOfDataTypesCountry = array("country_name", "total_cases", "new_cases", "active_cases", "total_deaths", "new_deaths", "total_recovered", "serious_critical", "total_cases_per1m", "time", "date");
 			$arrayOfDataTypesWorld = array("total_cases", "new_cases", "total_deaths", "total_recovered", "new_deaths", "time", "date");
 
-		echo '<div class="wrap">';
+		echo '<div class="wrap dameweb-style">';
 			_e("<h1>COVID 19 Live DATA - Information</h1>");
 			_e("<p>Select the name of the country you want to appear in the short code.</p>");
 			echo '<select id="selectCountry">';
@@ -167,10 +167,12 @@ class Covid_19_Live_Data_Admin
 			_e("<h2>ShortCodes</h2>");
 			_e("<p>This plugin has 2 short codes. One for the statistics of one selected country, the other for global statistics.</p>");
 			_e("<h3>SHORT CODE 1 - Stats of one country</h3>");
-			_e('<h5>Shortcode: <code>[corona_data_by_country <i>country="<b class="param">_Name of the country_</b>" data="<b class="param">_Type of data_</b>"]</i></code></h5>');
-			_e('<h5>Parameter:<code>country</code> - insert into this parameter name of the country, which you copied from the input above</h5>');
-			_e('<h5>Parameter:<code>data</code> - insert into this parameter type of data, which you see below</h5>');
-			_e('<h5>Parameter: Type of data for the first short code</h5>');
+			_e('<p>Shortcode:</p>');
+			echo '<p><code>[corona_data_by_country <i>country="<b class="param">_Name_of_the_country_</b>" data="<b class="param">_Type_of_data_" onlyNums</b>]</i></code></p>';
+			_e('<p>Parameter <b>[compulsory]</b>:<code>country</code> - insert into this parameter name of the country, which you copied from the input above</p>');
+			_e('<p>Parameter <b>[compulsory]</b>:<code>data</code> - insert into this parameter type of data, which you see below</p>');
+			_e('<p>Parameter <b>[optional]</b>: <code>onlyNums</code> - insert into page only digit, without any character (space, comma, etc.)</p>')
+			_e('<p>Parameter: Type of data for the first short code</p>');
 			echo '<ul class="terminal-font">';
 			foreach ($arrayOfDataTypesCountry as $i => $dataType) {
 				echo "<li><code>";
@@ -182,9 +184,11 @@ class Covid_19_Live_Data_Admin
 			_e('<p>Data type <code>date</code> and <code>time</code> show timestamp of last update</p>');
 			_e("<hr>");
 			_e("<h3>SHORT CODE 2 - Global stats</h3>");
-			_e('<h5>Shortcode: <code>[corona_total_cases_on_world  <i>data="<b class="param">_Type of global data_</b>"]</i></code></h5>');
-			_e('<h5>Parameter:<code>data</code> - insert into this parameter type of data, which you see below</h5>');
-			_e('<h5>Parameter: Type of data for the second short code</h5>');
+			_e('<p>Shortcode: </p>');
+			echo '<p><code>[corona_total_cases_on_world  <i>data="<b class="param">_Type of global data_" onlyNums</b>]</i></code></p>';
+			_e('<p>Parameter:<code>data</code> - insert into this parameter type of data, which you see below</p>');
+			_e('<p>Parameter <b>[optional]</b>: <code>onlyNums</code> - insert into page only digit, without any character (space, comma, etc.)</p>')
+			_e('<p>Parameter: Type of data for the second short code</p>');
 			echo '<ul class="terminal-font">';
 			foreach ($arrayOfDataTypesWorld as $i => $dataType) {
 				echo "<li><code>";
