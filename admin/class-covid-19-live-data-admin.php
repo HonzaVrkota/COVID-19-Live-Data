@@ -116,89 +116,104 @@ class Covid_19_Live_Data_Admin
 	 */
 	private function get_list_of_affected_countries()
 	{
-		$curlopt_url = "https://coronavirus-monitor.p.rapidapi.com/coronavirus/affected.php";
-		$curl = curl_init();
+		$_url = "https://coronavirus-monitor.p.rapidapi.com/coronavirus/affected.php";
 
-		curl_setopt_array($curl, array(
-			CURLOPT_URL => $curlopt_url,
-			CURLOPT_RETURNTRANSFER => true,
-			CURLOPT_FOLLOWLOCATION => true,
-			CURLOPT_ENCODING => "",
-			CURLOPT_MAXREDIRS => 10,
-			CURLOPT_TIMEOUT => 30,
-			CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-			CURLOPT_CUSTOMREQUEST => "GET",
-			CURLOPT_HTTPHEADER => array(
-				"x-rapidapi-host: coronavirus-monitor.p.rapidapi.com",
-				"x-rapidapi-key: $this->api_key"
-			),
-		));
+		$responseCountry = wp_remote_get(
+			$_url,
+			array(
+				'headers' => array(
+					'X-RapidAPI-Host' => 'coronavirus-monitor.p.rapidapi.com',
+					'X-RapidAPI-Key' => $this->api_key
+				)
+			)
+		);
 
-		$response = curl_exec($curl);
-		$err = curl_error($curl);
-
-		curl_close($curl);
-
-		if ($err) {
-			return "cURL Error #:" . $err;
-		} else {
-			$dataReturn = json_decode($response, true);
-			return $dataReturn['affected_countries'];
+		try {
+			$json = json_decode($responseCountry['body']);
+		} catch (Exception $ex) {
+			$json = null;
 		}
+
+		$responseJson = $json->affected_countries;
+		array_multisort($responseJson);
+		return $responseJson;
 	}
 	public function covid_data_dashboard()
-	{		
-			$arrayOfDataTypesCountry = array("country_name", "total_cases", "new_cases", "active_cases", "total_deaths", "new_deaths", "total_recovered", "serious_critical", "total_cases_per1m", "time", "date");
-			$arrayOfDataTypesWorld = array("total_cases", "new_cases", "total_deaths", "total_recovered", "new_deaths", "time", "date");
-
+	{
+		$arrayOfDataTypesCountry = array("country_name", "total_cases", "new_cases", "active_cases", "total_deaths", "new_deaths", "total_recovered", "serious_critical", "total_cases_per1m", "time", "date");
+		$arrayOfDataTypesWorld = array("total_cases", "new_cases", "total_deaths", "total_recovered", "new_deaths", "time", "date");
 		echo '<div class="wrap dameweb-style">';
-			_e("<h1>COVID 19 Live DATA - Information</h1>");
-			_e("<p>Select the name of the country you want to appear in the short code.</p>");
-			echo '<select id="selectCountry">';
-			foreach ($this->get_list_of_affected_countries() as $x => $countryName) {
-				echo '<option value="' . $countryName . '">';
-				echo $countryName;
-				echo "</option>";
-			}
-			echo "</select>";
-			_e("<p>After selecting your country will appear in the input below, copy the name and paste it into your short code</p>");
-			_e('<input size="60" id="countryInput" type="text" placeholder="Select the country in dropdown!" value="">');
-			_e("<hr>");
-			_e("<h2>ShortCodes</h2>");
-			_e("<p>This plugin has 2 short codes. One for the statistics of one selected country, the other for global statistics.</p>");
-			_e("<h3>SHORT CODE 1 - Stats of one country</h3>");
-			_e('<p>Shortcode:</p>');
-			echo '<p><code>[corona_data_by_country <i>country="<b class="param">_Name_of_the_country_</b>" data="<b class="param">_Type_of_data_" onlyNums</b>]</i></code></p>';
-			_e('<p>Parameter <b>[compulsory]</b>:<code>country</code> - insert into this parameter name of the country, which you copied from the input above</p>');
-			_e('<p>Parameter <b>[compulsory]</b>:<code>data</code> - insert into this parameter type of data, which you see below</p>');
-			_e('<p>Parameter <b>[optional]</b>: <code>onlyNums</code> - insert into page only digit, without any character (space, comma, etc.)</p>');
-			_e('<p>Parameter: Type of data for the first short code</p>');
-			echo '<ul class="terminal-font">';
-			foreach ($arrayOfDataTypesCountry as $i => $dataType) {
-				echo "<li><code>";
-				echo $dataType;
-				echo "</li></code>";
-			}
-			echo '</ul>';
-			_e('<i><b>Do not use</b> this parameter for the second short code. It has own parameters</i>');
-			_e('<p>Data type <code>date</code> and <code>time</code> show timestamp of last update</p>');
-			_e("<hr>");
-			_e("<h3>SHORT CODE 2 - Global stats</h3>");
-			_e('<p>Shortcode: </p>');
-			echo '<p><code>[corona_total_cases_on_world  <i>data="<b class="param">_Type_of_global_data_" onlyNums</b>]</i></code></p>';
-			_e('<p>Parameter <b>[compulsory]</b>: <code>data</code> - insert into this parameter type of data, which you see below</p>');
-			_e('<p>Parameter <b>[optional]</b>: <code>onlyNums</code> - insert into page only digit, without any character (space, comma, etc.)</p>');
-			_e('<p>Parameter: Type of data for the second short code</p>');
-			echo '<ul class="terminal-font">';
-			foreach ($arrayOfDataTypesWorld as $i => $dataType) {
-				echo "<li><code>";
-				echo $dataType;
-				echo "</li></code>";
-			}
-			echo '</ul>';
-			_e('<i><b>Do not use</b> this parameter for the first short code. It has own parameters</i>');
-			_e('<p>Data type <code>date</code> and <code>time</code> show timestamp of last update</p>');
+		_e("<h1>COVID 19 Live DATA - Information</h1>");
+		_e("<p>Select the name of the country you want to appear in the short code.</p>");
+		echo '<select id="selectCountry">';
+		foreach ($this->get_list_of_affected_countries() as $x => $countryName) {
+			echo '<option value="' . $countryName . '">';
+			echo $countryName;
+			echo "</option>";
+		}
+		echo "</select>";
+		_e("<p>After selecting your country will appear in the input below, copy the name and paste it into your short code</p>");
+		_e('<input size="60" id="countryInput" type="text" placeholder="Select the country in dropdown!" value="">');
+		_e("<hr>");
+		_e("<h2>ShortCodes</h2>");
+		_e("<p>This plugin has 2 short codes. One for the statistics of one selected country, the other for global statistics.</p>");
+		_e("<h3>SHORT CODE 1 - Stats of one country</h3>");
+		_e('<p>Shortcode:</p>');
+		echo '<p><code>[corona_data_by_country <i>country="<b class="param">_Name_of_the_country_</b>" data="<b class="param">_Type_of_data_" onlyNums</b>]</i></code></p>';
+		_e('<p>Parameter <b>[compulsory]</b>:<code>country</code> - insert into this parameter name of the country, which you copied from the input above</p>');
+		_e('<p>Parameter <b>[compulsory]</b>:<code>data</code> - insert into this parameter type of data, which you see below</p>');
+		_e('<p>Parameter <b>[optional]</b>: <code>onlyNums</code> - insert into page only digit, without any character (space, comma, etc.)</p>');
+		_e('<p>Parameter: Type of data for the first short code</p>');
+		echo '<ul class="terminal-font">';
+		foreach ($arrayOfDataTypesCountry as $i => $dataType) {
+			echo "<li><code>";
+			echo $dataType;
+			echo "</li></code>";
+		}
+		echo '</ul>';
+		_e('<i><b>Do not use</b> this parameter for the second short code. It has own parameters</i>');
+		_e('<p>Data type <code>date</code> and <code>time</code> show timestamp of last update</p>');
+		_e("<hr>");
+		_e("<h3>SHORT CODE 2 - Global stats</h3>");
+		_e('<p>Shortcode: </p>');
+		echo '<p><code>[corona_total_cases_on_world  <i>data="<b class="param">_Type_of_global_data_" onlyNums</b>]</i></code></p>';
+		_e('<p>Parameter <b>[compulsory]</b>: <code>data</code> - insert into this parameter type of data, which you see below</p>');
+		_e('<p>Parameter <b>[optional]</b>: <code>onlyNums</code> - insert into page only digit, without any character (space, comma, etc.)</p>');
+		_e('<p>Parameter: Type of data for the second short code</p>');
+		echo '<ul class="terminal-font">';
+		foreach ($arrayOfDataTypesWorld as $i => $dataType) {
+			echo "<li><code>";
+			echo $dataType;
+			echo "</li></code>";
+		}
+		echo '</ul>';
+		_e('<i><b>Do not use</b> this parameter for the first short code. It has own parameters</i>');
+		_e('<p>Data type <code>date</code> and <code>time</code> show timestamp of last update</p>');
+
 
 		echo '</div>';
+
+		$country = "Czechia";
+		$_url = "https://coronavirus-monitor.p.rapidapi.com/coronavirus/latest_stat_by_country.php?country=$country";
+
+		$responseCountry = wp_remote_get(
+			$_url,
+			array(
+				'headers' => array(
+					'X-RapidAPI-Host' => 'coronavirus-monitor.p.rapidapi.com',
+					'X-RapidAPI-Key' => $this->api_key
+				)
+			)
+		);
+
+		try {
+			$json = json_decode($responseCountry['body']);
+		} catch (Exception $ex) {
+			$json = "Error #:" . $ex;;
+		}
+
+		$responseJson = $json;
+
+		var_dump($responseJson->latest_stat_by_country[0]->id);
 	}
 }

@@ -133,33 +133,27 @@ class Covid_19_Live_Data_Public
 	 */
 	private function get_curl_response($curlopt_url)
 	{
-		$curl = curl_init();
+		$_url = $curlopt_url;
 
-		curl_setopt_array($curl, array(
-			CURLOPT_URL => $curlopt_url,
-			CURLOPT_RETURNTRANSFER => true,
-			CURLOPT_FOLLOWLOCATION => true,
-			CURLOPT_ENCODING => "",
-			CURLOPT_MAXREDIRS => 10,
-			CURLOPT_TIMEOUT => 30,
-			CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-			CURLOPT_CUSTOMREQUEST => "GET",
-			CURLOPT_HTTPHEADER => array(
-				"x-rapidapi-host: coronavirus-monitor.p.rapidapi.com",
-				"x-rapidapi-key: $this->api_key"
-			),
-		));
+		$responseCountry = wp_remote_get(
+			$_url,
+			array(
+				'headers' => array(
+					'X-RapidAPI-Host' => 'coronavirus-monitor.p.rapidapi.com',
+					'X-RapidAPI-Key' => $this->api_key
+				)
+			)
+		);
 
-		$response = curl_exec($curl);
-		$err = curl_error($curl);
-
-		curl_close($curl);
-
-		if ($err) {
-			return "cURL Error #:" . $err;
-		} else {
-			return json_decode($response, true);
+		try {
+			$json = json_decode($responseCountry['body']);
+		} catch (Exception $ex) {
+			$json = "Error #:" . $ex;;
 		}
+
+		$responseJson = $json;
+
+		return $responseJson;
 	}
 	/**
 	 * Connect to API server and get response 
@@ -178,7 +172,8 @@ class Covid_19_Live_Data_Public
 			$country = $this->formate_country_name($country);
 			$response = $this->get_curl_response("https://coronavirus-monitor.p.rapidapi.com/coronavirus/latest_stat_by_country.php?country=$country");
 
-			$rawLastUpdate = $response['latest_stat_by_country'][0]['record_date'];
+			$rawLastUpdate = $response->latest_stat_by_country[0]->record_date;
+
 			$rawLastUpdate = explode(" ", $rawLastUpdate);
 			$rawLastDateOfUpdate = $rawLastUpdate[0];
 			$rawLastTimeOfUpdate = $rawLastUpdate[1];
@@ -194,7 +189,7 @@ class Covid_19_Live_Data_Public
 			} elseif ($data == "date") {
 				return $_lastDateOfUpdate;
 			} else {
-				$returnData = $this->formate_numbers($response['latest_stat_by_country'][0][$data], $onlyNums);
+				$returnData = $this->formate_numbers($response->latest_stat_by_country[0]->$data, $onlyNums);
 
 				if (isset($returnData)) {
 					if ($returnData == "") {
@@ -213,7 +208,7 @@ class Covid_19_Live_Data_Public
 			*/
 		} else {
 			$responseWorld = $this->get_curl_response("https://coronavirus-monitor.p.rapidapi.com/coronavirus/worldstat.php");
-			$rawLastUpdate = $responseWorld['statistic_taken_at'];
+			$rawLastUpdate = $responseWorld->statistic_taken_at;
 			$rawLastUpdate = explode(" ", $rawLastUpdate);
 			$rawLastDateOfUpdate = $rawLastUpdate[0];
 			$rawLastTimeOfUpdate = $rawLastUpdate[1];
@@ -229,7 +224,7 @@ class Covid_19_Live_Data_Public
 			} elseif ($data == "date") {
 				return $_lastDateOfUpdate;
 			} else {
-				$returnData = $this->formate_numbers($responseWorld[$data], $onlyNums);
+				$returnData = $this->formate_numbers($responseWorld->$data, $onlyNums);
 				if (isset($returnData)) {
 					if ($returnData == "") {
 						$returnData = "0";

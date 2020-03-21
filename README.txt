@@ -1,52 +1,60 @@
-=== Plugin Name ===
-Contributors: (this should be a list of wordpress.org userid's)
-Donate link: https://dameweb.eu
-Tags: comments, spam
-Requires at least: 3.0.1
-Tested up to: 3.4
-Stable tag: 4.3
-License: GPLv2 or later
-License URI: http://www.gnu.org/licenses/gpl-2.0.html
+=== COVID-19 Live Data ===
+Contributors: honzavrkota
+Tags: COVID19, coronavirus, corona, covid, pandemic
+Donate link: www.dameweb.eu
+Requires at least: 2.7.1
+Tested up to: 5.3.2
+Requires PHP: 7.1
+Stable tag: 1.0.1
+License: GPL-2.0+
+License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
 Display live data of COVID-19. With 2 shortcodes you can display all stats about that virus.
 
 == Description ==
+The necessary information to run the short codes is in the administration menu -> settings -> COVID 19 Live Data.
+Actually affected countries are live from API server.
+1. **Shortcode 1**- Statistics of one country: [corona_data_by_country country=\"_Name_of_the_country_\" data=\"_Type_of_data_\" onlyNums]
+Parameter **[compulsory]**:country - insert into this parameter name of the country, which you copied from the input above
+Parameter **[compulsory]**:data - insert into this parameter type of data, which you see below
+Parameter **[optional]**: onlyNums - insert into page only digit, without any character (space, comma, etc.)
+Data types for global statistics:
+**country_name**
+**total_cases**
+**new_cases**
+**active_cases**
+**total_deaths**
+**new_deaths**
+**total_recovered**
+**serious_critical**
+**total_cases_per1m**
+**time**
+**date**
+**Do not use** this parameter for the second short code. It has own parameters
 
-Display live data of COVID-19. With 2 shortcodes you can display all stats about that virus.
+SHORT CODE 2 - Global stats: **[corona_total_cases_on_world data=\"_Type_of_global_data_\" onlyNums]**
+Parameter **[compulsory]**: data - insert into this parameter type of data, which you see below
+Parameter **[optional]**: onlyNums - insert into page only digit, without any character (space, comma, etc.)
+Parameter: Type of data for the second short code
+Data types for global world statistics:
+**total_cases**
+**new_cases**
+**total_deaths**
+**total_recovered**
+**new_deaths**
+**time**
+**date**
+**Do not use** this parameter for the first short code. It has own parameters
 
-A few notes about the sections above:
 
-*   "Contributors" is a comma separated list of wp.org/wp-plugins.org usernames
-*   "Tags" is a comma separated list of tags that apply to the plugin
-*   "Requires at least" is the lowest version that the plugin will work on
-*   "Tested up to" is the highest version that you've *successfully used to test the plugin*. Note that it might work on
-higher versions... this is just the highest one you've verified.
-*   Stable tag should indicate the Subversion "tag" of the latest stable version, or "trunk," if you use `/trunk/` for
-stable.
-
-    Note that the `readme.txt` of the stable tag is the one that is considered the defining one for the plugin, so
-if the `/trunk/readme.txt` file says that the stable tag is `4.3`, then it is `/tags/4.3/readme.txt` that'll be used
-for displaying information about the plugin.  In this situation, the only thing considered from the trunk `readme.txt`
-is the stable tag pointer.  Thus, if you develop in trunk, you can update the trunk `readme.txt` to reflect changes in
-your in-development version, without having that information incorrectly disclosed about the current stable version
-that lacks those changes -- as long as the trunk's `readme.txt` points to the correct stable tag.
-
-    If no stable tag is provided, it is assumed that trunk is stable, but you should specify "trunk" if that's where
-you put the stable version, in order to eliminate any doubt.
 
 == Installation ==
-
-This section describes how to install the plugin and get it working.
-
-e.g.
-
-1. Upload `covid-19-live-data.php` to the `/wp-content/plugins/` directory
-2. Activate the plugin through the 'Plugins' menu in WordPress
-3. Go to 'Settings' -> COVID 19 Live DATA 
+1. Upload \'covid-19-live-data.php\' to the \'/wp-content/plugins/\' directory
+2. Activate the plugin through the \'Plugins\' menu in WordPress
+3. Go to \'Settings\' -> COVID 19 Live DATA 
 4. Copy one of the short code -> insert into a page with two parameters
 
 == Frequently Asked Questions ==
-
 = What countries will the plugin show data from? =
 
 Displays data for all countries that are affected by COVID-19
@@ -56,20 +64,12 @@ Displays data for all countries that are affected by COVID-19
 Yes, the second short code display global stats of world.
 
 == Screenshots ==
+1. Information admin page
 
-1. This screen shot description corresponds to screenshot-1.(png|jpg|jpeg|gif). Note that the screenshot is taken from
-the /assets directory or the directory that contains the stable readme.txt (tags or trunk). Screenshots in the /assets
-directory take precedence. For example, `/assets/screenshot-1.png` would win over `/tags/4.3/screenshot-1.png`
-(or jpg, jpeg, gif).
-2. This is the second screen shot
+== Changelog ==
+= 1.0.1 =
+Short codes for listing current coronavirus statistics
 
-Here's a link to [WordPress](http://wordpress.org/ "Your favorite software") and one to [Markdown's Syntax Documentation][markdown syntax].
-Titles are optional, naturally.
-
-[markdown syntax]: http://daringfireball.net/projects/markdown/syntax
-            "Markdown is what the parser uses to process much of the readme file"
-
-Markdown uses email style notation for blockquotes and I've been told:
-> Asterisks for *emphasis*. Double it up  for **strong**.
-
-<?php code(); // goes in backticks ?>`
+== Upgrade Notice ==
+= 1.0.1 =
+Short codes for listing current coronavirus statistics
